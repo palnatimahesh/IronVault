@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Iron Vault</title>
+    <meta name="theme-color" content="#121212">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIklyb24gVmF1bHQiLAogICJzaG9ydF9uYW1lIjogIklyb24gVmF1bHQiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMTIxMiIsCiAgInRoZW1lX2NvbG9yIjogIiMxMjEyMTIiLAogICJpY29ucyI6IFt7CiAgICAic3JjIjogImh0dHBzOi8viaS5pbWd1ci5jb20vVzhaMk1aRC5wbmciLAogICAgInNpemVzIjogIjUxMng1MTIiLAogICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogIH1dCn0=">
+    <style>
+        :root { --bg: #0a0a0a; --card: #141414; --primary: #00ff88; --text: #ffffff; --dim: #888888; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* SCROLL & LAYOUT */
+        .screen { display: none; flex-direction: column; height: 100%; padding: 20px; overflow-y: auto; animation: fadeIn 0.3s; }
+        .active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* COMPONENTS */
+        h1, h2, h3 { margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .text-primary { color: var(--primary); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #222; }
+        
+        .card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #222; }
+        .btn { background: var(--card); color: var(--text); border: 1px solid #333; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn:active { transform: scale(0.98); background: #222; }
+        .btn-primary { background: var(--primary); color: #000; border: none; }
+        .btn-icon { font-size: 24px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        
+        /* INPUTS */
+        input { background: #222; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; width: 100%; font-size: 16px; margin-bottom: 10px; }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        /* NAV */
+        .nav-icon { font-size: 24px; cursor: pointer; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="screen active">
+        <div class="header">
+            <h3>Iron Vault</h3>
+            <div>
+                <span class="nav-icon" onclick="nav('guide')">📖</span>
+                <span class="nav-icon" onclick="nav('tools')">🧮</span>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--primary);">
+            <div style="font-size: 12px; color: var(--dim);">WELCOME BACK</div>
+            <h2 style="margin-top: 5px;">READY TO LIFT?</h2>
+        </div>
+
+        <div style="margin-top: 10px; margin-bottom: 5px; color: var(--primary); font-weight: bold;">PHAT SYSTEM</div>
+        <div class="grid">
+            <button class="btn" onclick="start('Upper Power')"><span class="btn-icon">💪</span> UPPER POWER</button>
+            <button class="btn" onclick="start('Lower Power')"><span class="btn-icon">🦵</span> LOWER POWER</button>
+        </div>
+        <div class="grid-3">
+            <button class="btn" onclick="start('Push Hyper')">PUSH</button>
+            <button class="btn" onclick="start('Pull Hyper')">PULL</button>
+            <button class="btn" onclick="start('Legs Hyper')">LEGS</button>
+        </div>
+
+        <div style="margin-top: 20px; margin-bottom: 5px; color: orange; font-weight: bold;">SPECIALTY</div>
+        <div class="grid-3">
+            <button class="btn" onclick="start('Bicep Blaster')">BICEPS</button>
+            <button class="btn" onclick="start('Tricep Torture')">TRICEPS</button>
+            <button class="btn" onclick="start('Chest Focus')">CHEST</button>
+            <button class="btn" onclick="start('Back Focus')">BACK</button>
+            <button class="btn" onclick="start('Shoulder Focus')">DELTS</button>
+            <button class="btn" onclick="start('Leg Focus')">LEGS</button>
+        </div>
+
+        <div style="margin-top: 20px; margin-bottom: 5px; color: cyan; font-weight: bold;">CONDITIONING</div>
+        <div class="grid-3">
+            <button class="btn" onclick="start('HIIT')">HIIT</button>
+            <button class="btn" onclick="start('Tabata')">TABATA</button>
+            <button class="btn" onclick="start('EMOM')">EMOM</button>
+            <button class="btn" onclick="start('Animal Flow')">FLOW</button>
+        </div>
+
+        <div style="margin-top: 20px; margin-bottom: 5px; color: violet; font-weight: bold;">RECOVERY</div>
+        <div class="grid-3">
+            <button class="btn" onclick="start('Desk Undo')">DESK</button>
+            <button class="btn" onclick="start('Squat Primer')">PRIMER</button>
+            <button class="btn" onclick="start('Mobility')">MOBILITY</button>
+        </div>
+        
+        <br><br>
+    </div>
+
+    <div id="workout" class="screen">
+        <div class="header">
+            <span class="nav-icon" onclick="nav('home')">⬅️</span>
+            <h3 id="w-title">WORKOUT</h3>
+            <span style="width: 24px;"></span>
+        </div>
+        
+        <div style="background: #222; height: 4px; width: 100%; border-radius: 2px; margin-bottom: 20px;">
+            <div id="w-progress" style="background: var(--primary); height: 100%; width: 0%; transition: 0.3s;"></div>
+        </div>
+
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 60px; margin-bottom: 20px;">🏋️</div>
+            <h2 id="ex-name" style="font-size: 28px;">BENCH PRESS</h2>
+            <div style="height: 1px; background: #333; margin: 15px 0;"></div>
+            <div class="text-primary" style="font-weight: bold; font-size: 18px;" id="ex-target">3x5</div>
+            <div style="color: var(--dim); margin-top: 5px; font-size: 14px;" id="ex-hist">Last: 100kg x 5</div>
+            <div style="color: orange; font-style: italic; margin-top: 15px;" id="ex-cue">"Leg Drive"</div>
+        </div>
+
+        <div class="grid">
+            <input type="number" id="in-weight" placeholder="Weight (kg)">
+            <input type="number" id="in-reps" placeholder="Reps">
+        </div>
+
+        <div id="timer" style="text-align: center; font-size: 24px; font-weight: bold; color: #ff5555; margin: 10px 0;"></div>
+
+        <button class="btn btn-primary" onclick="nextEx()">LOG SET & REST</button>
+    </div>
+
+    <div id="guide" class="screen">
+        <div class="header"><span class="nav-icon" onclick="nav('home')">⬅️</span><h3>BLACK BOOK</h3><span></span></div>
+        <div id="guide-content"></div>
+    </div>
+
+    <div id="tools" class="screen">
+        <div class="header"><span class="nav-icon" onclick="nav('home')">⬅️</span><h3>TOOLS</h3><span></span></div>
+        <div class="card">
+            <h3>PLATE CALCULATOR</h3>
+            <input type="number" id="plate-in" placeholder="Target Weight (kg)">
+            <button class="btn btn-primary" onclick="calcPlate()">CALCULATE</button>
+            <div id="plate-out" style="text-align: center; margin-top: 15px; font-weight: bold; font-size: 18px;">Load: -</div>
+        </div>
+    </div>
+
+<script>
+// ================= DATABASE =================
+const DB = {
+    "Upper Power": [{n:"Bench Press",r:"3x5",c:"Leg Drive",t:"POWER"},{n:"Bent Rows",r:"3x5",c:"Explode",t:"POWER"},{n:"OHP",r:"3x6",c:"Head Thru",t:"POWER"},{n:"Weighted Pullups",r:"3x6",c:"Lat Width",t:"POWER"},{n:"BB Curl",r:"3x8",c:"Strict",t:"ACC"},{n:"Skullcrusher",r:"3x8",c:"Elbows In",t:"ACC"}],
+    "Lower Power": [{n:"Squat",r:"3x5",c:"Break Parallel",t:"POWER"},{n:"Deadlift",r:"3x5",c:"Push Floor",t:"POWER"},{n:"Leg Press",r:"3x10",c:"Full Depth",t:"ACC"},{n:"Leg Curl",r:"3x10",c:"Hips Down",t:"ACC"},{n:"Calf Raise",r:"4x15",c:"Pause",t:"ACC"}],
+    "Push Hyper": [{n:"Inc DB Press",r:"3x10",c:"Upper Chest"},{n:"Seated Press",r:"3x12",c:"Shoulders"},{n:"Cable Fly",r:"3x15",c:"Squeeze"},{n:"Lat Raise",r:"4x15",c:"Width"},{n:"Pushdown",r:"3x15",c:"Lockout"},{n:"Dips",r:"Fail",c:"Lean"}],
+    "Pull Hyper": [{n:"BB Rows",r:"4x10",c:"Volume"},{n:"Lat Pulldown",r:"3x12",c:"Control"},{n:"Face Pull",r:"4x15",c:"Rear Delt"},{n:"Shrugs",r:"3x15",c:"Traps"},{n:"Hammer Curl",r:"3x12",c:"Forearms"},{n:"Preacher Curl",r:"3x12",c:"Peak"}],
+    "Legs Hyper": [{n:"Front Squat",r:"3x10",c:"Upright"},{n:"Lunges",r:"3x20",c:"Knee Touch"},{n:"Leg Ext",r:"3x15",c:"Burn"},{n:"Goblet Squat",r:"3x12",c:"Depth"},{n:"Seated Calf",r:"4x20",c:"Burn"}],
+    "Bicep Blaster": [{n:"BB Curl",r:"4x8"},{n:"Inc Curl",r:"3x10"},{n:"Hammer",r:"3x12"},{n:"21s",r:"2 Sets"}],
+    "Tricep Torture": [{n:"C.G. Bench",r:"4x8"},{n:"Skullcrush",r:"3x10"},{n:"Pushdown",r:"3x15"},{n:"Dips",r:"Fail"}],
+    "Chest Focus": [{n:"Bench",r:"4x8"},{n:"Inc DB",r:"3x10"},{n:"Dips",r:"3xFail"},{n:"Fly",r:"3x15"},{n:"Pushups",r:"2xFail"}],
+    "Back Focus": [{n:"Deadlift",r:"3x5"},{n:"Pullups",r:"3xFail"},{n:"T-Bar",r:"3x10"},{n:"Pulldown",r:"3x15"}],
+    "Shoulder Focus": [{n:"OHP",r:"4x8"},{n:"Arnold",r:"3x12"},{n:"Lat Raise",r:"5x15"},{n:"Face Pull",r:"3x15"}],
+    "Leg Focus": [{n:"Squat",r:"4x8"},{n:"Leg Press",r:"3x12"},{n:"Lunges",r:"3x20"},{n:"Leg Curl",r:"3x15"}],
+    "HIIT": [{n:"Burpees",r:"45s"},{n:"Box Jumps",r:"45s"},{n:"Climbers",r:"45s"}],
+    "Tabata": [{n:"Sprints",r:"20s/10s"},{n:"Swings",r:"20s/10s"}],
+    "EMOM": [{n:"Thrusters",r:"10/min"},{n:"Pullups",r:"5/min"}],
+    "Animal Flow": [{n:"Beast Crawl",r:"60s"},{n:"Crab Walk",r:"60s"},{n:"Scorpion Reach",r:"10/side"},{n:"Ape Hops",r:"60s"}],
+    "Desk Undo": [{n:"Chin Tucks",r:"20"},{n:"Doorway Stretch",r:"60s"},{n:"Thoracic Ext",r:"60s"}],
+    "Squat Primer": [{n:"90/90",r:"60s"},{n:"Ankle Rocks",r:"20"},{n:"Goblet Hold",r:"60s"}],
+    "Mobility": [{n:"Cat Cow",r:"60s"},{n:"90/90",r:"60s"},{n:"Deep Squat",r:"60s"}]
+};
+const WARMUPS = [{n:"Arm Circles",r:"30s",c:"Dynamic"},{n:"Band Pulls",r:"20 Reps",c:"Rear Delts"}];
+const COOLDOWN = {n:"Childs Pose",r:"60s",c:"Relax Spine"};
+
+const GUIDES = [
+    {t:"1. Iron Philosophy", s:"POWER + HYPERTROPHY", b:"Days 1-2: Power (3-5 Reps). Density.\nDays 4-6: Hypertrophy (8-15). Size.\nHeavy lifting builds engine. Volume builds fuel tank."},
+    {t:"2. RAMP Warmup", s:"DON'T STRETCH COLD", b:"R: Raise (Sweat)\nA: Activate (Glutes)\nM: Mobilize (Dynamic)\nP: Potentiate (Warmup sets)"},
+    {t:"3. The Big 3", s:"TECHNIQUE", b:"SQUAT: Break bar across traps.\nBENCH: Leg drive back.\nDEADLIFT: Push floor away."},
+    {t:"4. Overload", s:"DO MORE", b:"1. Intensity (+2.5kg)\n2. Volume (+1 Rep)\n3. Density (Less Rest)\n4. Form (Slower)"},
+    {t:"5. Nutrition", s:"FUEL", b:"Surplus = Growth. Deficit = Cut.\nProtein: 1g/lb.\nSleep: 8 Hours."},
+    {t:"6. CNS Fatigue", s:"RECOVERY", b:"Weak grip? No motivation? You're fried. Take a deload week."},
+    {t:"7. Equipment", s:"TOOLS", b:"Barbell: Mass\nDumbbell: Balance\nCable: Isolation\nMachine: Safety"},
+    {t:"8. Injury", s:"STAY SAFE", b:"Good Pain: Dull ache (DOMS)\nBad Pain: Sharp/Joint\nFix: Form > Weight"}
+];
+
+// ================= STATE =================
+let playlist = [];
+let pIndex = 0;
+let timer = null;
+
+// ================= NAVIGATION =================
+function nav(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(id === 'guide') loadGuide();
+}
+
+// ================= WORKOUT ENGINE =================
+function start(mode) {
+    playlist = [];
+    // Warmup
+    if(!["Mobility","HIIT","Tabata","EMOM","Desk Undo","Squat Primer","Animal Flow"].includes(mode)) {
+        WARMUPS.forEach(w => playlist.push({...w, h:"-"}));
+    }
+    // Main
+    if(DB[mode]) {
+        DB[mode].forEach(ex => {
+            let hist = localStorage.getItem("last_"+ex.n) || "New Exercise";
+            playlist.push({...ex, h: hist});
+        });
+    }
+    // Cooldown
+    if(!["Mobility","HIIT","Tabata","EMOM","Desk Undo","Squat Primer","Animal Flow"].includes(mode)) {
+        playlist.push({...COOLDOWN, h:"-"});
+    }
+    
+    pIndex = 0;
+    document.getElementById('w-title').innerText = mode;
+    showEx();
+    nav('workout');
+}
+
+function showEx() {
+    if(pIndex >= playlist.length) { alert("WORKOUT COMPLETE!"); nav('home'); return; }
+    let ex = playlist[pIndex];
+    document.getElementById('ex-name').innerText = ex.n;
+    document.getElementById('ex-target').innerText = "TARGET: " + ex.r;
+    document.getElementById('ex-hist').innerText = ex.h.includes("New") ? ex.h : "Last: " + ex.h;
+    document.getElementById('ex-cue').innerText = ex.c ? '"'+ex.c+'"' : "";
+    document.getElementById('in-weight').value = "";
+    document.getElementById('in-reps').value = "";
+    document.getElementById('w-progress').style.width = ((pIndex / playlist.length)*100) + "%";
+    
+    // Stop Timer
+    if(timer) clearInterval(timer);
+    document.getElementById('timer').innerText = "";
+}
+
+function nextEx() {
+    let ex = playlist[pIndex];
+    let w = document.getElementById('in-weight').value;
+    let r = document.getElementById('in-reps').value;
+    
+    // Save Log
+    if(w && r) {
+        localStorage.setItem("last_"+ex.n, w+"kg x "+r);
+    }
+    
+    // Start Timer
+    let sec = 90;
+    document.getElementById('timer').innerText = "REST: 1:30";
+    if(timer) clearInterval(timer);
+    timer = setInterval(() => {
+        sec--;
+        let m = Math.floor(sec/60);
+        let s = sec%60;
+        document.getElementById('timer').innerText = `REST: ${m}:${s<10?'0':''}${s}`;
+        if(sec<=0) { clearInterval(timer); document.getElementById('timer').innerText = "GO!"; }
+    }, 1000);
+
+    pIndex++;
+    if(pIndex < playlist.length) {
+        setTimeout(showEx, 500); // Visual delay for user to see button click
+    } else {
+        alert("WORKOUT COMPLETE!");
+        nav('home');
+    }
+}
+
+// ================= TOOLS & GUIDE =================
+function loadGuide() {
+    const box = document.getElementById('guide-content');
+    box.innerHTML = "";
+    GUIDES.forEach(g => {
+        let d = document.createElement('div');
+        d.className = 'card';
+        d.innerHTML = `<div class="text-primary" style="font-weight:bold">${g.t}</div><div style="font-size:12px; color:orange; margin:5px 0">${g.s}</div><div style="white-space:pre-line; color:#ddd; font-size:14px">${g.b}</div>`;
+        box.appendChild(d);
+    });
+}
+
+function calcPlate() {
+    let w = parseFloat(document.getElementById('plate-in').value);
+    if(!w || w < 20) { document.getElementById('plate-out').innerText = "Bar Only"; return; }
+    let rem = (w - 20) / 2;
+    let plates = [25, 20, 15, 10, 5, 2.5, 1.25];
+    let load = [];
+    for(let p of plates) {
+        while(rem >= p) { load.push(p); rem -= p; }
+    }
+    document.getElementById('plate-out').innerText = "Side: " + (load.length ? load.join(', ') : "Bar Only");
+}
+</script>
+</body>
+</html>
