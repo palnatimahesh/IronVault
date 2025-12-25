@@ -125,17 +125,23 @@
 
     <div id="tools" class="screen">
         <div class="header"><span class="nav-icon" onclick="nav('home')">⬅️</span><h3>TOOLS</h3><span></span></div>
+        
         <div class="card">
             <h3>PLATE CALCULATOR</h3>
             <input type="number" id="plate-in" placeholder="Target Weight (kg)">
             <button class="btn btn-primary" onclick="calcPlate()">CALCULATE</button>
             <div id="plate-out" style="text-align: center; margin-top: 15px; font-weight: bold; font-size: 18px; color: var(--primary);">Load: -</div>
         </div>
+
+        <div class="card">
+            <h3>DATA MANAGEMENT</h3>
+            <p style="color: #888; font-size: 14px; margin-bottom: 15px;">Download your training history as a CSV file.</p>
+            <button class="btn" style="border-color: var(--primary); color: var(--primary);" onclick="exportLogs()">⬇️ DOWNLOAD LOGS</button>
+        </div>
     </div>
 
 <script>
-// ================= DATABASE WITH VARIATIONS =================
-// Structure: Single object {n:name, r:reps...} OR Pool object {pool: [{...}, {...}]}
+// ================= DATABASE =================
 const DB = {
     "Upper Power": [
         {n:"Bench Press",r:"3x5",c:"Leg Drive",i:"💪"},
@@ -169,22 +175,16 @@ const DB = {
         {pool:[{n:"Leg Ext",r:"3x15",c:"Burn",i:"🦵"}, {n:"Goblet Squat",r:"3x12",c:"Depth",i:"🍷"}]},
         {n:"Calf Raise",r:"4x15",c:"Pause",i:"⬆️"}
     ],
-    
-    // SPECIALTY (Fixed Lists)
     "Chest Focus": [{n:"Bench",r:"4x8",i:"💪"},{n:"Inc DB",r:"3x10",i:"↗️"},{n:"Dips",r:"3xFail",i:"💪"},{n:"Fly",r:"3x15",i:"👐"},{n:"Pushups",r:"2xFail",i:"⬇️"}],
     "Back Focus": [{n:"Deadlift",r:"3x5",i:"🏋️"},{n:"Pullups",r:"3xFail",i:"🧗"},{n:"T-Bar",r:"3x10",i:"🚣"},{n:"Pulldown",r:"3x15",i:"⬇️"}],
     "Shoulder Focus": [{n:"OHP",r:"4x8",i:"🙌"},{n:"Arnold",r:"3x12",i:"💪"},{n:"Lat Raise",r:"5x15",i:"🦅"},{n:"Face Pull",r:"3x15",i:"👀"}],
     "Leg Focus": [{n:"Squat",r:"4x8",i:"🦵"},{n:"Leg Press",r:"3x12",i:"🦵"},{n:"Lunges",r:"3x20",i:"🚶"},{n:"Leg Curl",r:"3x15",i:"🦵"}],
     "Bicep Blaster": [{n:"BB Curl",r:"4x8",i:"💪"},{n:"Inc Curl",r:"3x10",i:"💪"},{n:"Hammer",r:"3x12",i:"🔨"},{n:"21s",r:"2 Sets",i:"⚡"}],
     "Tricep Torture": [{n:"C.G. Bench",r:"4x8",i:"💪"},{n:"Skullcrush",r:"3x10",i:"💀"},{n:"Pushdown",r:"3x15",i:"⬇️"},{n:"Dips",r:"Fail",i:"💪"}],
-
-    // CONDITIONING
     "HIIT": [{n:"Burpees",r:"45s",i:"🔥"},{n:"Box Jumps",r:"45s",i:"📦"},{n:"Climbers",r:"45s",i:"🧗"}],
     "Tabata": [{n:"Sprints",r:"20s/10s",i:"🏃"},{n:"Swings",r:"20s/10s",i:"🔔"}],
     "EMOM": [{n:"Thrusters",r:"10/min",i:"🏋️"},{n:"Pullups",r:"5/min",i:"🧗"}],
     "Animal Flow": [{n:"Beast Crawl",r:"60s",i:"🐾"},{n:"Crab Walk",r:"60s",i:"🦀"},{n:"Scorpion Reach",r:"10/side",i:"🦂"},{n:"Ape Hops",r:"60s",i:"🦍"}],
-
-    // RECOVERY
     "Desk Undo": [{n:"Chin Tucks",r:"20",i:"🙂"},{n:"Doorway Stretch",r:"60s",i:"🚪"},{n:"Thoracic Ext",r:"60s",i:"🧘"}],
     "Squat Primer": [{n:"90/90",r:"60s",i:"🧘"},{n:"Ankle Rocks",r:"20",i:"🦶"},{n:"Goblet Hold",r:"60s",i:"🍷"}],
     "Mobility": [{n:"Cat Cow",r:"60s",i:"🐈"},{n:"90/90",r:"60s",i:"🧘"},{n:"Deep Squat",r:"60s",i:"🦵"}]
@@ -217,7 +217,9 @@ function nav(id) {
 
 function start(mode) {
     playlist = [];
-    
+    if(timer) clearInterval(timer); // FIX: Clear old timers on start
+    document.getElementById('timer').innerText = "";
+
     // 1. Add Warmup
     if(!["Mobility","HIIT","Tabata","EMOM","Desk Undo","Squat Primer","Animal Flow"].includes(mode)) {
         WARMUPS.forEach(w => playlist.push({...w, h:"-"}));
@@ -228,16 +230,21 @@ function start(mode) {
         DB[mode].forEach(slot => {
             let ex;
             if(slot.pool) {
-                // RANDOM VARIATION LOGIC HERE
                 ex = slot.pool[Math.floor(Math.random() * slot.pool.length)];
             } else {
                 ex = slot;
             }
-            let hist = localStorage.getItem("last_"+ex.n) || "New Exercise";
-            // Safety defaults
+            // Get Last History
+            let last = "New Exercise";
+            try {
+                const logs = JSON.parse(localStorage.getItem("iron_logs")) || [];
+                const found = logs.reverse().find(l => l.ex === ex.n);
+                if(found) last = found.w + "kg x " + found.r;
+            } catch(e) {}
+            
             ex.c = ex.c || "Focus"; 
             ex.i = ex.i || "🏋️";
-            playlist.push({...ex, h: hist});
+            playlist.push({...ex, h: last});
         });
     }
 
@@ -259,15 +266,14 @@ function showEx() {
     document.getElementById('ex-name').innerText = ex.n;
     document.getElementById('ex-icon').innerText = ex.i;
     document.getElementById('ex-target').innerText = "TARGET: " + ex.r;
-    document.getElementById('ex-hist').innerText = ex.h.includes("New") ? ex.h : "Last: " + ex.h;
+    document.getElementById('ex-hist').innerText = "Last: " + ex.h;
     document.getElementById('ex-cue').innerText = '"' + ex.c + '"';
     
     document.getElementById('in-weight').value = "";
     document.getElementById('in-reps').value = "";
     document.getElementById('w-progress').style.width = ((pIndex / playlist.length)*100) + "%";
     
-    if(timer) clearInterval(timer);
-    document.getElementById('timer').innerText = "";
+    // FIX: Do NOT clear timer here. The rest timer should persist while user views next ex.
 }
 
 function nextEx() {
@@ -275,36 +281,48 @@ function nextEx() {
     let w = document.getElementById('in-weight').value;
     let r = document.getElementById('in-reps').value;
     
+    // SAVE LOG PERMANENTLY
     if(w && r) {
-        localStorage.setItem("last_"+ex.n, w+"kg x "+r);
+        let logs = JSON.parse(localStorage.getItem("iron_logs")) || [];
+        logs.push({
+            date: new Date().toISOString().split('T')[0],
+            ex: ex.n,
+            w: w,
+            r: r
+        });
+        localStorage.setItem("iron_logs", JSON.stringify(logs));
     }
     
-    // Timer Logic
+    // TIMER LOGIC
     let sec = 90;
-    if(document.getElementById('w-title').innerText === 'HIIT') sec = 15;
-    if(document.getElementById('w-title').innerText === 'Tabata') sec = 10;
+    const mode = document.getElementById('w-title').innerText;
+    if(mode === 'HIIT') sec = 15;
+    if(mode === 'Tabata') sec = 10;
 
-    document.getElementById('timer').innerText = "REST: " + fmt(sec);
     if(timer) clearInterval(timer);
+    updateTimer(sec);
     
     timer = setInterval(() => {
         sec--;
-        document.getElementById('timer').innerText = "REST: " + fmt(sec);
+        updateTimer(sec);
         if(sec<=0) { clearInterval(timer); document.getElementById('timer').innerText = "GO!"; }
     }, 1000);
 
     pIndex++;
     if(pIndex < playlist.length) {
-        // Delay to allow user to see button press
-        setTimeout(showEx, 250);
+        setTimeout(showEx, 250); // Small delay for visual feedback
     } else {
         setTimeout(() => {alert("WORKOUT COMPLETE!"); nav('home');}, 500);
     }
 }
 
-function fmt(s) { return (s-(s%=60))/60+(9<s?':':':0')+s; }
+function updateTimer(s) {
+    let m = Math.floor(s/60);
+    let sec = s%60;
+    document.getElementById('timer').innerText = `REST: ${m}:${sec<10?'0':''}${sec}`;
+}
 
-// ================= TOOLS & GUIDE =================
+// ================= TOOLS =================
 function loadGuide() {
     const box = document.getElementById('guide-content');
     box.innerHTML = "";
@@ -326,6 +344,24 @@ function calcPlate() {
         while(rem >= p) { load.push(p); rem -= p; }
     }
     document.getElementById('plate-out').innerText = "Side: " + (load.length ? load.join(', ') : "Bar Only");
+}
+
+function exportLogs() {
+    const logs = localStorage.getItem("iron_logs");
+    if(!logs) { alert("No logs found yet!"); return; }
+    
+    const data = JSON.parse(logs);
+    let csv = "Date,Exercise,Weight,Reps\n";
+    data.forEach(row => {
+        csv += `${row.date},${row.ex},${row.w},${row.r}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'iron_vault_logs.csv';
+    a.click();
 }
 </script>
 </body>
