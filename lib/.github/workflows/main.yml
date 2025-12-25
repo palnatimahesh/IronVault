@@ -2,12 +2,13 @@ name: Build APK
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch:  # This adds a manual "Run" button
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # ... (leave the rest of the file exactly the same)
+
 
     steps:
       - uses: actions/checkout@v3
